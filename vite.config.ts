@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
+
 import { VantResolver } from '@vant/auto-import-resolver'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
@@ -10,11 +13,9 @@ import Unocss from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 // import DefineOptions from 'unplugin-vue-define-options/vite'
-import { ConfigEnv, defineConfig, loadEnv } from 'vite'
+import { ConfigEnv, defineConfig } from 'vite'
 import commonjs from 'vite-plugin-commonjs'
-
-const { path, existsSync } = require('fs')
-const vantDir = path.join('./node_modules', 'vant') // 获取 vant 目录
+const vantDir = join('./node_modules', 'vant')
 const designWidth = existsSync(vantDir) ? 375 : 750
 
 // https://vitejs.dev/config/
