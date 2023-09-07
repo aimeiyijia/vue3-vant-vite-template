@@ -1,4 +1,7 @@
-import { httpGetSmsCode } from '@/api/common'
+import 'vant/es/notify/style'
+
+import { showNotify } from 'vant'
+
 import { useRequest } from '@/http/hooks'
 import { phoneReg } from '@/rules/regular'
 export const useVerPhone = () => {
@@ -26,23 +29,16 @@ export const useVerPhone = () => {
     if (!disabledBtn.value) {
       disabledBtn.value = true
       if (!phoneReg.test(phone)) {
-        wx.showModal({
-          title: '提示',
-          showCancel: false,
-          content: '请输入正确的手机号'
-        })
+        showNotify({ type: 'warning', message: '请输入正确的手机号' })
         return
       }
       const param = {
         phone
       }
-      const res = await useRequest(httpGetSmsCode(param))
+      // const res = await useRequest(new Promise(() => {}))
+      const res = { code: 200 }
       if (res.code === 200) {
-        wx.showModal({
-          title: '提示',
-          showCancel: false,
-          content: '手机验证码发送成功'
-        })
+        showNotify({ type: 'success', message: '手机验证码发送成功' })
         countDown()
       }
     }

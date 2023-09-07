@@ -33,14 +33,13 @@ export interface UserInfo {
   userRoleCode: string
 }
 export interface RememberLoginInfo {
-  roleCode: string
-  isNeedVerify: string
-  isRemember: boolean
-  userName: string
+  username: string
+  idCard: string
+  phone: string
+  remember: boolean
 }
 export interface UserInfoStore {
   userInfo: UserInfo
-  platform: string
   rememberLoginInfo: RememberLoginInfo
 }
 // userRoleCode: 'cooperative'
@@ -52,9 +51,7 @@ export default defineStore({
       userInfo: {
         userRoleCode: 'cooperative'
       } as UserInfo,
-      rememberLoginInfo: {} as RememberLoginInfo,
-      // 登录的端，gir管理人端、zqr债权人端、cooperative府院
-      platform: 'cooperative'
+      rememberLoginInfo: {} as RememberLoginInfo
     }
   },
   getters: {
@@ -68,9 +65,6 @@ export default defineStore({
     },
     setRememberLoginInfo(rememberLoginInfo: RememberLoginInfo) {
       Object.assign(this.rememberLoginInfo, rememberLoginInfo)
-    },
-    setPlatform(platform: string) {
-      this.platform = platform
     },
     clearToken() {
       this.userInfo.token = ''

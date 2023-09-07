@@ -15,13 +15,7 @@
       "@/*": ["src/*"]
     },
     "lib": ["esnext", "dom", "ES6"],
-    "types": [
-      "node",
-      "@dcloudio/types",
-      "pinia-plugin-persist-uni",
-      "miniprogram-api-typings",
-      "unplugin-vue-define-options/macros-global"
-    ]
+    "types": ["node", "unplugin-vue-define-options/macros-global"]
   },
   "exclude": ["node_modules"],
   "include": [

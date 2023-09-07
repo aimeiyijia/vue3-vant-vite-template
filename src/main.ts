@@ -1,4 +1,6 @@
+import 'the-new-css-reset/css/reset.css'
 import 'uno.css'
+import '@/styles/index.scss'
 
 import { createSSRApp } from 'vue'
 

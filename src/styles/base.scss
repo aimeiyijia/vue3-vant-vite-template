@@ -1,1 +1,25 @@
 @charset "UTF-8";
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+}
+.page-container {
+  overflow: auto;
+  padding: 0 12px;
+  width: 100%;
+  height: calc(100% - 46px);
+  color: #333;
+  // background-color: #f4f5f7;
+}
+.page-container__has-bottom {
+  position: relative;
+  height: calc(100% - 104px);
+}
+.page-bottom-container {
+  position: absolute;
+  bottom: 12px;
+  padding: 0 12px;
+  width: 100%;
+}

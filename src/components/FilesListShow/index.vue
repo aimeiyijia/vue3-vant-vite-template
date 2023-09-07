@@ -1,6 +1,6 @@
 <template>
   <view class="files-list-show-contaner">
-    <view v-for="(item, index) in operaFilesList" :key="item.fileName" class="view-file">
+    <view v-for="item in operaFilesList" :key="item.fileName" class="view-file">
       <view class="files-list-show__info">
         <van-image
           :src="getFileTypeImg(item)"
@@ -13,15 +13,7 @@
         </text>
       </view>
       <view class="files-list-show__opera">
-        <!-- <u-button
-          type="primary"
-          :plain="true"
-          shape="circle"
-          size="mini"
-          icon="download"
-          @click="handleDownFile(item)"
-        ></u-button> -->
-        <view v-if="showDownloadButton" class="file-download">
+        <!-- <view v-if="showDownloadButton" class="file-download">
           <i
             class="file__opera-icon download-icon icon-ep-download"
             @click="handleDownFile(item)"
@@ -29,39 +21,30 @@
         </view>
         <view v-if="showDeleteButton" class="file-del">
           <i class="file__opera-icon delete-icon icon-ep-delete" @click="handleDelFile(index)"></i>
-        </view>
+        </view> -->
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import iconXlsImg from '@/assets/images/icons/excel.png'
-import iconImgImg from '@/assets/images/icons/img.png'
-import iconPdfImg from '@/assets/images/icons/pdf.png'
-import iconTxtImg from '@/assets/images/icons/txt.png'
-import iconUnkownImg from '@/assets/images/icons/unkown.png'
-import iconDocImg from '@/assets/images/icons/word.png'
-import iconZipImg from '@/assets/images/icons/zip.png'
+function getImageUrl(name: string) {
+  return new URL(`/src/assets/images/icons/${name}`, import.meta.url).href
+}
+const iconUnkownImg = getImageUrl('unkown.png')
 import { getFileType } from '@/utils'
 
 interface Props {
   filesList: any[]
-  fileNameStyle: object
-  showDownloadButton: boolean
-  showDeleteButton: boolean
-  ahdm: string
-  openByMini: boolean
-  directView: boolean
+  fileNameStyle?: object
+  showDownloadButton?: boolean
+  showDeleteButton?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
   filesList: () => [],
   fileNameStyle: () => ({}),
   showDownloadButton: true,
-  showDeleteButton: false,
-  ahdm: '',
-  openByMini: false,
-  directView: false
+  showDeleteButton: false
 })
 
 const emits = defineEmits(['del'])
@@ -72,17 +55,17 @@ const operaFilesList = ref<any[]>([])
 
 const fileType = computed(() => {
   return {
-    txt: iconTxtImg,
-    doc: iconDocImg,
-    docx: iconDocImg,
-    xls: iconXlsImg,
-    xlsx: iconXlsImg,
-    jpg: iconImgImg,
-    jpeg: iconImgImg,
-    png: iconImgImg,
-    pdf: iconPdfImg,
-    zip: iconZipImg,
-    rar: iconZipImg
+    txt: getImageUrl('txt.png'),
+    doc: getImageUrl('word.png'),
+    docx: getImageUrl('word.png'),
+    xls: getImageUrl('excel.png'),
+    xlsx: getImageUrl('excel.png'),
+    jpg: getImageUrl('img.png'),
+    jpeg: getImageUrl('img.png'),
+    png: getImageUrl('img.png'),
+    pdf: getImageUrl('pdf.png'),
+    zip: getImageUrl('zip.png'),
+    rar: getImageUrl('zip.png')
   }
 })
 
@@ -103,127 +86,16 @@ watch(
   }
 )
 
-onMounted(() => {
-  if (props.directView) {
-    handleDownFile(props.filesList[0])
-  }
-})
+onMounted(() => {})
 
 function getFileTypeImg(file) {
   return (file.type && fileType.value[file.type.toLowerCase()]) || iconUnkownImg
 }
 function handleDownFile(file) {
-  if (props.openByMini) {
-    viewFileByMini(file)
-  } else {
-    downloadFile(file.filePath)
-  }
+  const fileName = file.fileName.substring(0, file.fileName.lastIndexOf('.'))
+  window.open(import.meta.env.VITE_downloadUrl + file.filePath + '?filename=' + encodeURI(fileName))
 }
-function downloadFile(filepath) {
-  console.log(filepath)
-  wx.showLoading({
-    title: '下载中...'
-  })
-  const fileurl = import.meta.env.VITE_downloadUrl + '/' + filepath
-  uni.downloadFile({
-    url: fileurl,
-    success: res => {
-      const tempFilePath = res.tempFilePath
-      const fileType = tempFilePath.substring(
-        tempFilePath.lastIndexOf('.') + 1,
-        tempFilePath.length
-      )
-      console.log(res, '下载')
-      if (supportFileType.indexOf(fileType) > -1) {
-        uni.openDocument({
-          filePath: tempFilePath,
-          showMenu: true,
-          success: res => {
-            uni.hideLoading()
-
-            console.log('打开文档成功')
-          },
-          fail: err => {
-            uni.hideLoading()
-            console.log(err, '打开失败')
-            uni.showModal({
-              title: '温馨提示',
-              content: '打开文档失败！' + err.errMsg,
-              showCancel: false,
-              success: e => {}
-            })
-          }
-        })
-      } else if (supportImgType.indexOf(fileType) > -1) {
-        uni.previewImage({
-          urls: [tempFilePath],
-          showmenu: true,
-          success: res => {
-            uni.hideLoading()
-
-            console.log('打开文档成功')
-          },
-          fail: err => {
-            uni.hideLoading()
-
-            uni.showModal({
-              title: '温馨提示',
-              content: '打开文档失败！' + err.errMsg,
-              showCancel: false,
-              success: e => {}
-            })
-          }
-        })
-      } else {
-        uni.hideLoading()
-
-        uni.showModal({
-          title: '温馨提示',
-          content: '该文件不支持预览！',
-          showCancel: false,
-          success: e => {}
-        })
-      }
-    },
-    fail: err => {
-      uni.hideLoading()
-
-      uni.showModal({
-        title: '温馨提示',
-        content: '下载失败！' + err.errMsg,
-        showCancel: false,
-        success: e => {}
-      })
-    }
-  })
-}
-// 通过小程序预览
-function viewFileByMini(file) {
-  const { filePath } = file
-  wx.openEmbeddedMiniProgram({
-    appId: 'wxd441fef27b0532a5',
-    path: `pages/download/download?filePath=${filePath}&ahdm=${props.ahdm}`,
-    fail: err => {
-      console.log(err, '文件预览失败')
-      wx.showToast({
-        title: '文件预览失败，请稍后重试！'
-      })
-    }
-  })
-}
-function handleDelFile(delIndex) {
-  wx.showModal({
-    title: '提示',
-    content: '确定删除该文件？',
-    success(res) {
-      if (res.confirm) {
-        const delFiles = operaFilesList.value.splice(delIndex, 1)
-        // 剩下的文件，删除的文件
-        emits('del', operaFilesList, delFiles)
-      }
-    }
-  })
-}
+function handleDelFile(delIndex) {}
 </script>
 
 <style lang="scss" scoped>
@@ -234,19 +106,19 @@ function handleDelFile(delIndex) {
 }
 .view-file {
   justify-content: space-between;
-  margin: 12rpx 0;
-  padding: 8rpx 16rpx;
-  border-radius: 8rpx;
+  margin: 6px 0;
+  padding: 4px 8px;
+  border-radius: 4px;
   background-color: #f5f8fd;
   .files-list-show__info {
     flex-wrap: nowrap;
     justify-content: left;
     flex: 2;
     .text {
-      margin: 0 16rpx;
+      margin: 0 8px;
       text-align: left;
-      font-size: 28rpx;
-      color: #3b7afb;
+      font-size: 14px;
+      color: #222;
       word-break: break-all;
     }
   }
@@ -254,20 +126,20 @@ function handleDelFile(delIndex) {
     display: flex;
     .file-download,
     .file-del {
-      margin: 0 8rpx;
-      padding: 4rpx;
-      /* border: 3rpx solid #000; */
+      margin: 0 4px;
+      padding: 2px;
+      /* border: 3px solid #000; */
       /* border-radius: 100%; */
     }
     .file__opera-icon {
       font-weight: bold;
     }
     .download-icon {
-      font-size: 42rpx;
+      font-size: 20px;
       color: #3b7afb;
     }
     .delete-icon {
-      font-size: 36rpx;
+      font-size: 18px;
       color: #ee0a24;
     }
     .file-download {

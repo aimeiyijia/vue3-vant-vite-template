@@ -35,7 +35,7 @@ module.exports = {
         initial: bemSelector
       },
       utilitySelectors: '^.util-[a-z]+$',
-      ignoreSelectors: ['^.icon-', '^.wx-', '^:deep', '^.van-', 'page'],
+      ignoreSelectors: ['^.icon-', '^.wx-', '^:deep', '^.van-', 'page', 'html', 'body', '#app'],
       ignoreCustomProperties: ['^:deep'],
       implicitComponents: true
     },
